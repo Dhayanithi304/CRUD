@@ -1,84 +1,80 @@
-//sample data to show initial records
-let data = [
-  { name: "Maiyle", age: 21 },
-  { name: "Yashini", age: 20 },
-];
+let data = [];
 
 function displayData() {
-  const dataRows = document.getElementById("dataRows");
-  dataRows.innerHTML = "";
+  const tbodyData = document.getElementById("tbodyData");
+  tbodyData.innerHTML = "";
 
   data.forEach((record, index) => {
     const row = `
-            <tr>
-                <td>${record.name}</td>
-                <td>${record.age}</td>
-               <td>
-                    <button type="button" class="btn btn-info btn-sm edit-btn" data-index="${index}">Edit</button>
-                    <button type="button" class="btn btn-danger btn-sm delete-btn" data-index="${index}">Delete</button>
-                </td>
-            </tr>
-        `;
-
-    dataRows.insertAdjacentHTML("beforeend", row);
+    <tr>
+      <td>${record.name}</td>
+      <td>${record.age}</td>
+      <td>${record.email}</td>
+      <td>
+        <button class="btn btn-success edit-btn" data-index="${index}">Edit</button>
+        <button class="btn btn-danger delete-btn" data-index="${index}">Delete</button>
+      </td>
+    </tr>
+    `;
+    tbodyData.insertAdjacentHTML("beforeend", row);
   });
 }
 
-//funtion to handle form submission
-
-function handleFormSubmit(event) {
+function submitFunction(event) {
   event.preventDefault();
+
   const nameInput = document.getElementById("name");
   const ageInput = document.getElementById("age");
+  const emailInput = document.getElementById("email");
 
   const name = nameInput.value.trim();
   const age = parseInt(ageInput.value);
+  const email = emailInput.value.trim();
 
-  if (name == "" || isNaN(age)) {
-    alert("please fill in all the feilds correctly ");
+  if (name == "" || isNaN(age) || email == "") {
+    alert("Fill the all details below asked");
+    return false;
   }
 
-  //add data to the array
-  data.push({ name, age });
+  data.push({ name, age, email });
 
-  //clear form fields
   nameInput.value = "";
   ageInput.value = "";
+  emailInput.value = "";
 
   displayData();
 }
 
-//function to edit button click
-function handleEditClick(event){
-    const index = event.target.getAttribute("data-index");
-    const record = data[index];
-    
-    const nameInput = document.getElementById("name");
-    const ageInput = document.getElementById("age");
+function editBtn(event) {
+  const index = event.target.getAttribute("data-index");
+  const record = data[index];
 
-    nameInput.value = record.name;
-    ageInput.value = record.age;
+  const nameInput = document.getElementById("name");
+  const ageInput = document.getElementById("age");
+  const emailInput = document.getElementById("email");
 
-    data.splice(index,1);
-    displayData();
+  nameInput.value = record.name;
+  ageInput.value = record.age;
+  emailInput.value = record.email;
+
+  data.splice(index, 1);
+  displayData();
 }
 
-function handleDeleteClick(event){
-    const index = event.target.getAttribute("data-index");
-    data.splice(index,1);
-    displayData();
+function deleteBtn(event) {
+  const index = event.target.getAttribute("data-index");
+  data.splice(index, 1);
+  displayData();
 }
 
-document
-  .getElementById("crudForm")
-  .addEventListener("submit", handleFormSubmit);
+document.getElementById("tbodyData").addEventListener("click", (event) => {
+  if (event.target.classList.contains("edit-btn")) {
+    editBtn(event);
+  } else if (event.target.classList.contains("delete-btn")) {
+    deleteBtn(event);
+  }
+});
 
-document.getElementById("dataRows").addEventListener("click",(event)=>{
-    if(event.target.classList.contains("delete-btn")){
-        handleDeleteClick(event);
-    }else if(event.target.classList.contains("edit-btn")){
-        handleEditClick(event);
-    }
-} )
+document.getElementById("crudForm").addEventListener("submit", submitFunction);
 
 displayData();
